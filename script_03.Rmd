@@ -40,7 +40,9 @@ sep_old <-
          title = course_title,
          name = course_name,
          department = course_department) %>% 
-  filter(u_grad > 10)
+  filter(u_grad > 10) %>%
+  group_by(id,title,name,department) %>%
+  summarise(u_grad = sum(u_grad), .groups = "drop" )
 
 # But this is not correct! Look for Gov 50: Data. What do you see? What can you
 # do to clean it up?
@@ -53,6 +55,23 @@ sep_old <-
 
 **Prompt:** Read in and clean the new data, creating an object called `sep_new`. 
 
+```{r}
+sep_new <- 
+  read_excel("new_data/class_enrollment_summary_by_term_9-21-2020.xlsx", 
+             skip = 3) %>% 
+  clean_names() %>% 
+  filter(! is.na(course_title)) %>% 
+  select(-grad, -non_degree, -x_reg, -vus, -employee, 
+         -withdraw, -total, -instructor_full_name, -course_section_code) %>%
+  rename(id = course_id,
+         title = course_title,
+         name = course_name,
+         department = course_department) %>% 
+  filter(u_grad > 10) %>%
+  group_by(id,title,name,department) %>%
+  summarise(u_grad = sum(u_grad), .groups = "drop" )
+
+```
 
 
 ### Scene 2
@@ -61,14 +80,29 @@ sep_old <-
 
 Before we start on the model, Wisdom suggests we should:
 
+*define what we  want to know: classes with high change between enrollment at the beginning of the semester and today.
+
+*See if we can draw parallels between classes that all had that characteristic
+
+*Which week saw the most students drop a class
+
 
 After we have a model, Temperance suggests we should:
 
+*The reasons for dropping class are not listed
 
+*We may not see a clear trend. 
 
 ### Scene 3
 
 **Prompt:** Which classes had the biggest increases and decreases in undergraduate enrollments between September 1 and today? Make a graphic that shows the 5 biggest increases and decreases. Make it look nice.
+
+```{r}
+
+
+sep_new$u_grad
+
+```
 
 
 
